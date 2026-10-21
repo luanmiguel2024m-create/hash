@@ -31,8 +31,24 @@ jobs:
           cp ../index.html www/index.html
           npx cap add android
           npx cap sync android
-          # Declara permissão de microfone no manifesto Android.
-          sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application#' android/app/src/main/AndroidManifest.xml
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          sed -i 's#<manifest#<manifest\\n    xmlns:tools="http://schemas.android.com/tools"#' "$MANIFEST"
+          sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\\n    <uses-permission android:name="android.permission.INTERNET" />\\n    <application android:usesCleartextTraffic="true"#' "$MANIFEST"
+          mkdir -p android/app/src/main/java/com/hash/assistente
+          cp ../android-native/RaxiSpeechPlugin.java android/app/src/main/java/com/hash/assistente/RaxiSpeechPlugin.java
+          ACTIVITY=android/app/src/main/java/com/hash/assistente/MainActivity.java
+          cat > "$ACTIVITY" <<'EOF'
+          package com.hash.assistente;
+          import android.os.Bundle;
+          import com.getcapacitor.BridgeActivity;
+          public class MainActivity extends BridgeActivity {
+            @Override
+            public void onCreate(Bundle savedInstanceState) {
+              registerPlugin(RaxiSpeechPlugin.class);
+              super.onCreate(savedInstanceState);
+            }
+          }
+          EOF
       - name: Compilar APK
         run: |
           cd hash-app/android

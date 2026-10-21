@@ -1,0 +1,27 @@
+name: Gerar APK HASH
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar arquivos
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Preparar Android
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y android-sdk
+          echo "O projeto HASH ainda precisa ser empacotado como aplicativo Android."

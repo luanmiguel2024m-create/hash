@@ -1,46 +1,95 @@
+
 name: Gerar APK HASH
+
 on:
   workflow_dispatch:
   push:
     branches: [main]
+
 permissions:
   contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Baixar projeto
         uses: actions/checkout@v4
+
       - name: Preparar Java 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+
       - name: Preparar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
       - name: Criar projeto Android
         run: |
           mkdir hash-app
           cd hash-app
+
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
+
           npx cap init HASH com.hash.assistente --web-dir=www
+
           mkdir www
           cp ../index.html www/index.html
+
           npx cap add android
           npx cap sync android
+
           MANIFEST=android/app/src/main/AndroidManifest.xml
-          sed -i 's#<manifest#<manifest\\n    xmlns:tools="http://schemas.android.com/tools"#' "$MANIFEST"
-          sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\\n    <uses-permission android:name="android.permission.INTERNET" />\\n    <application android:usesCleartextTraffic="true"#' "$MANIFEST"
+
+          python3 - "$MANIFEST" <<'PY'
+          import sys
+          from pathlib import Path
+
+          p = Path(sys.argv[1])
+          s = p.read_text()
+
+          if 'android.permission.INTERNET' not in s:
+              s = s.replace(
+                  '<application',
+                  '    <uses-permission android:name="android.permission.INTERNET" />\n    <application',
+                  1
+              )
+
+          if 'android.permission.RECORD_AUDIO' not in s:
+              s = s.replace(
+                  '    <application',
+                  '    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application',
+                  1
+              )
+
+          if 'android:usesCleartextTraffic=' not in s:
+              s = s.replace(
+                  '<application',
+                  '<application android:usesCleartextTraffic="true"',
+                  1
+              )
+
+          p.write_text(s)
+          PY
+
           mkdir -p android/app/src/main/java/com/hash/assistente
-          cp ../android-native/RaxiSpeechPlugin.java android/app/src/main/java/com/hash/assistente/RaxiSpeechPlugin.java
+
+          cp ../android-native/RaxiSpeechPlugin.java \
+            android/app/src/main/java/com/hash/assistente/RaxiSpeechPlugin.java
+
           ACTIVITY=android/app/src/main/java/com/hash/assistente/MainActivity.java
+
           cat > "$ACTIVITY" <<'EOF'
           package com.hash.assistente;
+
           import android.os.Bundle;
           import com.getcapacitor.BridgeActivity;
+
           public class MainActivity extends BridgeActivity {
             @Override
             public void onCreate(Bundle savedInstanceState) {
@@ -49,11 +98,13 @@ jobs:
             }
           }
           EOF
+
       - name: Compilar APK
         run: |
           cd hash-app/android
           chmod +x gradlew
           ./gradlew assembleDebug
+
       - name: Disponibilizar APK
         uses: actions/upload-artifact@v4
         with:

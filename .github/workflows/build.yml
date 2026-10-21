@@ -1,7 +1,10 @@
+
 name: Gerar APK HASH
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   contents: read
@@ -11,17 +14,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Baixar arquivos
+      - name: Baixar projeto
         uses: actions/checkout@v4
 
-      - name: Configurar Java
+      - name: Preparar Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Preparar Android
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Criar projeto Android
         run: |
-          sudo apt-get update
-          sudo apt-get install -y android-sdk
-          echo "O projeto HASH ainda precisa ser empacotado como aplicativo Android."
+          mkdir hash-app
+          cd hash-app
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init HASH com.hash.assistente --web-dir=www
+          mkdir www
+          cp ../index.html www/index.html
+          npx cap add android
+          npx cap sync android
+
+      - name: Compilar APK
+        run: |
+          cd hash-app/android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Disponibilizar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HASH-APK
+          path: hash-app/android/app/build/outputs/apk/debug/app-debug.apk

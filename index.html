@@ -1,178 +1,407 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0b0f">
-  <title>HASH — Assistente</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #0b0b0f;
-      color: #f5f5f7;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 22px;
-    }
-    main { width: 100%; max-width: 420px; text-align: center; }
-    .logo { font-size: 64px; font-weight: 900; letter-spacing: 8px; }
-    .sub { color: #9999a8; margin: 8px 0 35px; }
-    #resposta {
-      min-height: 100px;
-      padding: 20px;
-      border: 1px solid #30303c;
-      border-radius: 18px;
-      background: #14141c;
-      margin-bottom: 25px;
-      line-height: 1.5;
-    }
-    button, input, select {
-      font-size: 16px;
-      border-radius: 13px;
-      padding: 14px;
-    }
-    button {
-      border: none;
-      background: var(--cor, #e53950);
-      color: white;
-      cursor: pointer;
-    }
-    #ouvir { width: 100%; padding: 20px; font-weight: bold; }
-    .secao { margin-top: 25px; text-align: left; }
-    .secao label { display: block; margin: 12px 0 7px; }
-    input, select {
-      width: 100%;
-      background: #191922;
-      color: white;
-      border: 1px solid #393945;
-    }
-    #config { display: none; }
-    .linha { display: flex; gap: 8px; margin-top: 12px; }
-    .linha button { flex: 1; }
-    .pequeno { background: #272733; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090909">
+<title>HASH • Assistente</title>
+
+<style>
+:root {
+  --accent: #ff3030;
+  --bg: #090909;
+  --panel: #151515;
+  --text: #ffffff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+}
+main {
+  width: 100%;
+  max-width: 480px;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+.brand span { color: var(--accent); }
+button, input, select {
+  font: inherit;
+}
+button {
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: var(--panel);
+  color: white;
+  padding: 12px 15px;
+  cursor: pointer;
+}
+button:active { transform: scale(.97); }
+.icon-button {
+  padding: 10px 12px;
+  font-size: 18px;
+}
+.orb {
+  width: 132px;
+  height: 132px;
+  margin-top: 75px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, #292929, #101010 70%);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 35px color-mix(in srgb, var(--accent) 25%, transparent);
+  transition: .2s;
+}
+.orb.listening {
+  animation: pulse 1.5s infinite;
+}
+.orb span {
+  font-size: 42px;
+  font-weight: bold;
+  color: var(--accent);
+}
+@keyframes pulse {
+  50% { box-shadow: 0 0 45px var(--accent); }
+}
+h1 {
+  margin: 24px 0 8px;
+  font-size: 27px;
+}
+#status {
+  color: #aaa;
+  text-align: center;
+  font-size: 14px;
+}
+.response {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 28px;
+  padding: 18px;
+  background: var(--panel);
+  border: 1px solid #292929;
+  border-radius: 16px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+.settings {
+  display: none;
+  width: 100%;
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid #333;
+  border-radius: 16px;
+  background: var(--panel);
+}
+.settings.show { display: block; }
+.settings label {
+  display: block;
+  margin: 15px 0 7px;
+  color: #ccc;
+  font-size: 14px;
+}
+.settings input, .settings select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #090909;
+  color: white;
+}
+.settings input[type="color"] { height: 45px; }
+.hint {
+  margin-top: 22px;
+  color: #777;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.6;
+}
+</style>
 </head>
+
 <body>
 <main>
-  <div class="logo">HASH</div>
-  <div class="sub">Seu assistente pessoal</div>
+  <header>
+    <div class="brand"><span>H</span>ASH</div>
+    <button class="icon-button" id="settingsBtn"
+      aria-label="Personalizar">⚙</button>
+  </header>
 
-  <div id="resposta">Olá! Eu sou o HASH. Toque no botão e fale comigo.</div>
+  <div class="orb" id="orb"><span>H</span></div>
 
-  <button id="ouvir" onclick="ouvir()">🎙 FALAR COM HASH</button>
+  <h1 id="greeting">Olá, sou o HASH</h1>
+  <div id="status">Toque em iniciar e diga “Raxi”.</div>
 
-  <div class="linha">
-    <button class="pequeno" onclick="responder()">🔊 Falar resposta</button>
-    <button class="pequeno" onclick="mostrarConfig()">⚙ Personalizar</button>
+  <div class="response" id="response" aria-live="polite">
+    Estou esperando você me chamar.
   </div>
 
-  <section id="config" class="secao">
+  <div class="controls">
+    <button class="primary" id="startBtn">🎙 Iniciar escuta</button>
+    <button id="stopBtn">Parar</button>
+    <button id="speakBtn">🔊 Repetir resposta</button>
+  </div>
+
+  <section class="settings" id="settings">
     <h3>Personalizar HASH</h3>
-    <label>Cor dos botões</label>
-    <input id="cor" type="color" value="#e53950" onchange="mudarCor(this.value)">
-    <label>Nome do assistente</label>
-    <input id="nome" value="HASH" maxlength="20">
-    <label>Cor de fundo</label>
-    <input id="fundo" type="color" value="#0b0b0f" onchange="mudarFundo(this.value)">
-    <div class="linha">
-      <button onclick="salvar()">Salvar</button>
-      <button class="pequeno" onclick="mostrarConfig()">Fechar</button>
+
+    <label for="assistantName">Nome do assistente</label>
+    <input id="assistantName" maxlength="24" value="HASH">
+
+    <label for="accent">Cor principal</label>
+    <input id="accent" type="color" value="#ff3030">
+
+    <label for="background">Cor do fundo</label>
+    <input id="background" type="color" value="#090909">
+
+    <label for="panel">Cor dos painéis</label>
+    <input id="panel" type="color" value="#151515">
+
+    <div class="controls">
+      <button class="primary" id="saveBtn">Salvar aparência</button>
+      <button id="closeSettings">Fechar</button>
     </div>
   </section>
+
+  <div class="hint">
+    A escuta precisa ser iniciada com o aplicativo aberto.
+    O reconhecimento contínuo pode ser interrompido pelo Android.
+  </div>
 </main>
 
 <script>
-  const resposta = document.getElementById('resposta');
+const $ = id => document.getElementById(id);
 
-  function falar(texto) {
-    if (!('speechSynthesis' in window)) {
-      resposta.textContent = 'A leitura de voz não está disponível neste navegador.';
-      return;
-    }
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+let listening = false;
+let waitingCommand = false;
+let restarting = false;
+let lastResponse = "Estou esperando você me chamar.";
+
+function setStatus(text) {
+  $("status").textContent = text;
+}
+
+function respond(text) {
+  lastResponse = text;
+  $("response").textContent = text;
+
+  if ("speechSynthesis" in window) {
     speechSynthesis.cancel();
-    const voz = new SpeechSynthesisUtterance(texto);
-    voz.lang = 'pt-BR';
-    speechSynthesis.speak(voz);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "pt-BR";
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+  }
+}
+
+function applySettings() {
+  const name = localStorage.getItem("hashName") || "HASH";
+  const accent = localStorage.getItem("hashAccent") || "#ff3030";
+  const bg = localStorage.getItem("hashBg") || "#090909";
+  const panel = localStorage.getItem("hashPanel") || "#151515";
+
+  document.documentElement.style.setProperty("--accent", accent);
+  document.documentElement.style.setProperty("--bg", bg);
+  document.documentElement.style.setProperty("--panel", panel);
+  $("greeting").textContent = "Olá, sou o " + name;
+  document.title = name + " • Assistente";
+
+  $("assistantName").value = name;
+  $("accent").value = accent;
+  $("background").value = bg;
+  $("panel").value = panel;
+}
+
+function startListening() {
+  if (!SpeechRecognition) {
+    setStatus("Reconhecimento de voz indisponível neste ambiente.");
+    respond("Não consegui acessar o reconhecimento de voz. Verifique a compatibilidade do aplicativo.");
+    return;
   }
 
-  function responder() {
-    falar(resposta.textContent);
-  }
+  if (listening) return;
 
-  function ouvir() {
-    const Reconhecimento = window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
+  try {
+    recognition = new SpeechRecognition();
+    recognition.lang = "pt-BR";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 3;
 
-    if (!Reconhecimento) {
-      resposta.textContent = 'O reconhecimento de voz não está disponível aqui. Abra esta página no Chrome atualizado.';
-      return;
-    }
-
-    const reconhecimento = new Reconhecimento();
-    reconhecimento.lang = 'pt-BR';
-    reconhecimento.onstart = () => {
-      resposta.textContent = 'Estou ouvindo... fale agora.';
+    recognition.onstart = () => {
+      listening = true;
+      restarting = false;
+      $("orb").classList.add("listening");
+      setStatus("Estou ouvindo. Diga Raxi para me chamar.");
     };
-    reconhecimento.onresult = (evento) => {
-      const texto = evento.results[0][0].transcript;
-      resposta.textContent = 'Você disse: ' + texto;
-      const comando = texto.toLowerCase();
 
-      if (comando.includes('olá') || comando.includes('oi')) {
-        resposta.textContent = 'Olá! Como posso ajudar você?';
-      } else if (comando.includes('seu nome')) {
-        resposta.textContent = 'Meu nome é ' + (localStorage.nomeHash || 'HASH') + '.';
-      } else if (comando.includes('horas')) {
-        resposta.textContent = 'Agora são ' +
-          new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) + '.';
+    recognition.onresult = event => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (!result.isFinal) continue;
+
+        const transcript = result[0].transcript
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim();
+
+        if (waitingCommand) {
+          waitingCommand = false;
+          handleCommand(transcript);
+          if (listening) setStatus("Diga Raxi para me chamar novamente.");
+          continue;
+        }
+
+        if (/\braxi\b|\brashi\b|\braks[iy]\b/.test(transcript)) {
+          waitingCommand = true;
+          respond("Oi! Estou ouvindo.");
+          setStatus("Pode falar seu comando.");
+        }
       }
-      falar(resposta.textContent);
     };
-    reconhecimento.onerror = () => {
-      resposta.textContent = 'Não consegui ouvir. Confira a permissão do microfone e tente novamente.';
+
+    recognition.onerror = event => {
+      if (event.error === "not-allowed" ||
+          event.error === "service-not-allowed") {
+        listening = false;
+        $("orb").classList.remove("listening");
+        setStatus("Permita o acesso ao microfone nas configurações.");
+      } else if (event.error === "audio-capture") {
+        setStatus("Não encontrei um microfone disponível.");
+      } else if (event.error !== "no-speech" &&
+                 event.error !== "aborted") {
+        setStatus("A escuta foi interrompida: " + event.error);
+      }
     };
-    reconhecimento.start();
+
+    recognition.onend = () => {
+      listening = false;
+      $("orb").classList.remove("listening");
+
+      if (restarting) return;
+
+      // Tenta retomar a escuta enquanto a página continua ativa.
+      if (window.keepHashListening) {
+        setTimeout(() => {
+          if (window.keepHashListening) startListening();
+        }, 700);
+      } else {
+        setStatus("Escuta parada. Toque em iniciar para voltar.");
+      }
+    };
+
+    window.keepHashListening = true;
+    recognition.start();
+  } catch (error) {
+    listening = false;
+    setStatus("Não foi possível iniciar. Tente novamente.");
+  }
+}
+
+function stopListening() {
+  window.keepHashListening = false;
+  listening = false;
+  waitingCommand = false;
+  restarting = true;
+
+  if (recognition) {
+    try { recognition.stop(); } catch (e) {}
   }
 
-  function mostrarConfig() {
-    const c = document.getElementById('config');
-    c.style.display = c.style.display === 'block' ? 'none' : 'block';
-  }
+  $("orb").classList.remove("listening");
+  setStatus("Escuta desligada.");
+}
 
-  function mudarCor(cor) {
-    document.documentElement.style.setProperty('--cor', cor);
+function handleCommand(command) {
+  if (/\b(oi|ola|bom dia|boa tarde|boa noite)\b/.test(command)) {
+    respond("Olá! Que bom falar com você.");
+  } else if (command.includes("seu nome") ||
+             command.includes("quem e voce")) {
+    respond("Meu nome é " +
+      (localStorage.getItem("hashName") || "HASH") +
+      ", seu assistente.");
+  } else if (command.includes("que horas") ||
+             command.includes("horas sao")) {
+    respond("Agora são " + new Date().toLocaleTimeString("pt-BR", {
+      hour: "2-digit", minute: "2-digit"
+    }));
+  } else if (command.includes("data de hoje") ||
+             command.includes("que dia e hoje")) {
+    respond("Hoje é " + new Date().toLocaleDateString("pt-BR", {
+      weekday: "long", day: "numeric", month: "long"
+    }));
+  } else if (command.includes("parar de ouvir") ||
+             command.includes("desligar escuta")) {
+    stopListening();
+    respond("Tudo bem. Desliguei a escuta.");
+  } else {
+    respond("Ainda não sei executar esse comando: " + command +
+      ". Podemos adicionar mais funções depois.");
   }
+}
 
-  function mudarFundo(cor) {
-    document.body.style.background = cor;
-  }
+$("startBtn").addEventListener("click", startListening);
+$("stopBtn").addEventListener("click", stopListening);
 
-  function salvar() {
-    localStorage.nomeHash = document.getElementById('nome').value || 'HASH';
-    localStorage.corHash = document.getElementById('cor').value;
-    localStorage.fundoHash = document.getElementById('fundo').value;
-    document.querySelector('.logo').textContent = localStorage.nomeHash;
-    mudarCor(localStorage.corHash);
-    mudarFundo(localStorage.fundoHash);
-    resposta.textContent = 'Personalização salva neste navegador!';
-  }
+$("speakBtn").addEventListener("click", () => {
+  respond(lastResponse);
+});
 
-  if (localStorage.nomeHash) {
-    document.querySelector('.logo').textContent = localStorage.nomeHash;
-    document.getElementById('nome').value = localStorage.nomeHash;
-  }
-  if (localStorage.corHash) {
-    document.getElementById('cor').value = localStorage.corHash;
-    mudarCor(localStorage.corHash);
-  }
-  if (localStorage.fundoHash) {
-    document.getElementById('fundo').value = localStorage.fundoHash;
-    mudarFundo(localStorage.fundoHash);
-  }
+$("settingsBtn").addEventListener("click", () => {
+  $("settings").classList.toggle("show");
+});
+
+$("closeSettings").addEventListener("click", () => {
+  $("settings").classList.remove("show");
+});
+
+$("saveBtn").addEventListener("click", () => {
+  localStorage.setItem("hashName",
+    $("assistantName").value.trim() || "HASH");
+  localStorage.setItem("hashAccent", $("accent").value);
+  localStorage.setItem("hashBg", $("background").value);
+  localStorage.setItem("hashPanel", $("panel").value);
+  applySettings();
+  respond("Personalização salva.");
+});
+
+applySettings();
 </script>
 </body>
-  </html>
+</html>

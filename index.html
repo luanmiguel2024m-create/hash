@@ -1,407 +1,55 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#090909">
-<title>HASH • Assistente</title>
-
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b0b0f">
+<title>HASH</title>
 <style>
-:root {
-  --accent: #ff3030;
-  --bg: #090909;
-  --panel: #151515;
-  --text: #ffffff;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-}
-main {
-  width: 100%;
-  max-width: 480px;
-  padding: 25px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.brand {
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 3px;
-}
-.brand span { color: var(--accent); }
-button, input, select {
-  font: inherit;
-}
-button {
-  border: 1px solid #333;
-  border-radius: 12px;
-  background: var(--panel);
-  color: white;
-  padding: 12px 15px;
-  cursor: pointer;
-}
-button:active { transform: scale(.97); }
-.icon-button {
-  padding: 10px 12px;
-  font-size: 18px;
-}
-.orb {
-  width: 132px;
-  height: 132px;
-  margin-top: 75px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle, #292929, #101010 70%);
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 35px color-mix(in srgb, var(--accent) 25%, transparent);
-  transition: .2s;
-}
-.orb.listening {
-  animation: pulse 1.5s infinite;
-}
-.orb span {
-  font-size: 42px;
-  font-weight: bold;
-  color: var(--accent);
-}
-@keyframes pulse {
-  50% { box-shadow: 0 0 45px var(--accent); }
-}
-h1 {
-  margin: 24px 0 8px;
-  font-size: 27px;
-}
-#status {
-  color: #aaa;
-  text-align: center;
-  font-size: 14px;
-}
-.response {
-  width: 100%;
-  min-height: 100px;
-  margin-top: 28px;
-  padding: 18px;
-  background: var(--panel);
-  border: 1px solid #292929;
-  border-radius: 16px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-.primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: white;
-}
-.settings {
-  display: none;
-  width: 100%;
-  margin-top: 24px;
-  padding: 18px;
-  border: 1px solid #333;
-  border-radius: 16px;
-  background: var(--panel);
-}
-.settings.show { display: block; }
-.settings label {
-  display: block;
-  margin: 15px 0 7px;
-  color: #ccc;
-  font-size: 14px;
-}
-.settings input, .settings select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #444;
-  border-radius: 8px;
-  background: #090909;
-  color: white;
-}
-.settings input[type="color"] { height: 45px; }
-.hint {
-  margin-top: 22px;
-  color: #777;
-  font-size: 12px;
-  text-align: center;
-  line-height: 1.6;
-}
+:root{--accent:#ff343f;--bg:#0b0b0f;--panel:#17171e;--panel2:#22222b;--text:#f7f7fb;--muted:#a2a2b0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100dvh}
+button,input{font:inherit}button{border:0;cursor:pointer;color:var(--text);background:var(--panel2);border-radius:13px;padding:13px 14px;font-weight:650}
+button:active{transform:scale(.98)}.accent{background:var(--accent);color:white}.shell{max-width:1000px;margin:auto;padding:16px;min-height:100dvh}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.logo{width:48px;height:48px;border-radius:15px;background:var(--accent);display:grid;place-items:center;font-size:24px;font-weight:900}.brand{flex:1}.brand h1{font-size:23px;letter-spacing:2px;margin:0}.sub{font-size:11px;color:var(--muted);letter-spacing:1.4px}.mode{padding:9px 11px;font-size:12px}
+.status{display:flex;align-items:center;gap:9px;padding:12px 14px;background:var(--panel);border-radius:14px;margin-bottom:14px;color:var(--muted);font-size:13px}.dot{width:9px;height:9px;border-radius:50%;background:#777}.dot.ok{background:#36d98a}
+.layout{display:grid;grid-template-columns:1fr;gap:14px}.panel{background:var(--panel);border:1px solid #292932;border-radius:18px;padding:17px;min-width:0}.panel h2{font-size:15px;margin:0 0 15px;display:flex;align-items:center;gap:9px}.ico{color:var(--accent);font-size:20px}.volrow{display:flex;align-items:center;gap:10px}.volrow button{width:46px;height:46px;padding:0;font-size:20px}.volume{flex:1;min-width:0}.voltop{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:700}.pct{font-size:20px}.range{width:100%;accent-color:var(--accent);height:28px}.hint{color:var(--muted);font-size:11px;margin-top:8px}.music{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}.music button{min-height:64px;font-size:21px}.music button small{display:block;font-size:10px;margin-top:4px;font-weight:500}.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.quick button{display:flex;align-items:center;gap:10px;text-align:left;min-height:56px}.quick b{font-size:18px;color:var(--accent)}.connection{display:flex;gap:8px}.connection input{min-width:0;width:100%;border:1px solid #383842;background:#0e0e13;color:white;border-radius:12px;padding:12px}.voice{text-align:center;padding:24px 16px}.orb{width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff7d83,var(--accent) 45%,#69121a);margin:0 auto 12px;box-shadow:0 0 30px #ff343f30;display:grid;place-items:center;font-size:27px}.voice p{color:var(--muted);font-size:13px;margin:5px 0 15px}.footer{color:#747482;text-align:center;font-size:11px;padding:16px 0 6px}
+body.landscape .shell{max-width:1200px;padding:12px}body.landscape header{margin-bottom:10px}body.landscape .layout{grid-template-columns:1.05fr 1fr 0.85fr;align-items:stretch}body.landscape .panel{padding:14px}body.landscape .voice{padding:18px 12px}body.landscape .orb{width:58px;height:58px;margin-bottom:8px}body.landscape .quick{grid-template-columns:1fr}body.landscape .quick button{min-height:47px}body.landscape .music button{min-height:55px;padding:8px 4px}
+@media(min-width:700px){body:not(.landscape) .layout{grid-template-columns:1fr 1fr}body:not(.landscape) .voice{grid-column:1/-1}}
 </style>
 </head>
-
 <body>
-<main>
-  <header>
-    <div class="brand"><span>H</span>ASH</div>
-    <button class="icon-button" id="settingsBtn"
-      aria-label="Personalizar">⚙</button>
-  </header>
-
-  <div class="orb" id="orb"><span>H</span></div>
-
-  <h1 id="greeting">Olá, sou o HASH</h1>
-  <div id="status">Toque em iniciar e diga “Raxi”.</div>
-
-  <div class="response" id="response" aria-live="polite">
-    Estou esperando você me chamar.
-  </div>
-
-  <div class="controls">
-    <button class="primary" id="startBtn">🎙 Iniciar escuta</button>
-    <button id="stopBtn">Parar</button>
-    <button id="speakBtn">🔊 Repetir resposta</button>
-  </div>
-
-  <section class="settings" id="settings">
-    <h3>Personalizar HASH</h3>
-
-    <label for="assistantName">Nome do assistente</label>
-    <input id="assistantName" maxlength="24" value="HASH">
-
-    <label for="accent">Cor principal</label>
-    <input id="accent" type="color" value="#ff3030">
-
-    <label for="background">Cor do fundo</label>
-    <input id="background" type="color" value="#090909">
-
-    <label for="panel">Cor dos painéis</label>
-    <input id="panel" type="color" value="#151515">
-
-    <div class="controls">
-      <button class="primary" id="saveBtn">Salvar aparência</button>
-      <button id="closeSettings">Fechar</button>
-    </div>
-  </section>
-
-  <div class="hint">
-    A escuta precisa ser iniciada com o aplicativo aberto.
-    O reconhecimento contínuo pode ser interrompido pelo Android.
-  </div>
+<div class="shell">
+<header><div class="logo">H</div><div class="brand"><h1>HASH</h1><div class="sub">PC CONTROL CENTER</div></div><button class="mode" id="modeBtn">↔ Modo deitado</button></header>
+<div class="status"><span class="dot" id="dot"></span><span id="statusText">PC desconectado</span><span style="margin-left:auto">Wi-Fi</span></div>
+<main class="layout">
+<section class="panel"><h2><span class="ico">◖))</span> Volume do PC</h2>
+<div class="volrow"><button id="muteBtn" aria-label="Silenciar">◖×</button><div class="volume"><div class="voltop"><span>Volume do Windows</span><span class="pct" id="pct">50%</span></div><input class="range" id="vol" type="range" min="0" max="100" value="50"></div></div>
+<div class="hint">O volume será controlado no computador quando a conexão estiver configurada.</div>
+</section>
+<section class="panel"><h2><span class="ico">♫</span> Música do PC</h2><div class="music">
+<button id="prev">|◀<small>Anterior</small></button><button class="accent" id="play">▶<small>Reproduzir / Pausar</small></button><button id="next">▶|<small>Próxima</small></button>
+</div><div class="hint" id="musicHint">Controles de mídia do computador.</div></section>
+<section class="panel"><h2><span class="ico">⌘</span> Conectar computador</h2>
+<div class="connection"><input id="pcAddress" placeholder="IP do PC (ex.: 192.168.1.20:8765)"><button class="accent" id="connect">Conectar</button></div>
+<div class="hint">Celular e PC precisam estar na mesma rede Wi-Fi. O programa auxiliar do Windows ainda precisa ser instalado e configurado.</div>
+</section>
+<section class="panel"><h2><span class="ico">✦</span> Atalhos</h2><div class="quick">
+<button id="pcMute"><b>◖×</b> Silenciar PC</button><button id="pcVolDown"><b>−</b> Diminuir volume</button><button id="pcVolUp"><b>＋</b> Aumentar volume</button><button id="voiceBtn"><b>🎙</b> Falar com Raxi</button>
+</div></section>
+<section class="panel voice"><div class="orb">ϟ</div><h2 style="justify-content:center;margin-bottom:5px">Olá, sou o Raxi</h2><p id="voiceStatus">Painel de controle HASH pronto.</p><button class="accent" id="speak">Falar resposta</button></section>
 </main>
-
+<div class="footer">HASH • Personalize o tema e alterne entre os modos em pé e deitado.</div>
+</div>
 <script>
-const $ = id => document.getElementById(id);
-
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-
-let recognition = null;
-let listening = false;
-let waitingCommand = false;
-let restarting = false;
-let lastResponse = "Estou esperando você me chamar.";
-
-function setStatus(text) {
-  $("status").textContent = text;
-}
-
-function respond(text) {
-  lastResponse = text;
-  $("response").textContent = text;
-
-  if ("speechSynthesis" in window) {
-    speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "pt-BR";
-    utterance.rate = 1;
-    speechSynthesis.speak(utterance);
-  }
-}
-
-function applySettings() {
-  const name = localStorage.getItem("hashName") || "HASH";
-  const accent = localStorage.getItem("hashAccent") || "#ff3030";
-  const bg = localStorage.getItem("hashBg") || "#090909";
-  const panel = localStorage.getItem("hashPanel") || "#151515";
-
-  document.documentElement.style.setProperty("--accent", accent);
-  document.documentElement.style.setProperty("--bg", bg);
-  document.documentElement.style.setProperty("--panel", panel);
-  $("greeting").textContent = "Olá, sou o " + name;
-  document.title = name + " • Assistente";
-
-  $("assistantName").value = name;
-  $("accent").value = accent;
-  $("background").value = bg;
-  $("panel").value = panel;
-}
-
-function startListening() {
-  if (!SpeechRecognition) {
-    setStatus("Reconhecimento de voz indisponível neste ambiente.");
-    respond("Não consegui acessar o reconhecimento de voz. Verifique a compatibilidade do aplicativo.");
-    return;
-  }
-
-  if (listening) return;
-
-  try {
-    recognition = new SpeechRecognition();
-    recognition.lang = "pt-BR";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 3;
-
-    recognition.onstart = () => {
-      listening = true;
-      restarting = false;
-      $("orb").classList.add("listening");
-      setStatus("Estou ouvindo. Diga Raxi para me chamar.");
-    };
-
-    recognition.onresult = event => {
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (!result.isFinal) continue;
-
-        const transcript = result[0].transcript
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .trim();
-
-        if (waitingCommand) {
-          waitingCommand = false;
-          handleCommand(transcript);
-          if (listening) setStatus("Diga Raxi para me chamar novamente.");
-          continue;
-        }
-
-        if (/\braxi\b|\brashi\b|\braks[iy]\b/.test(transcript)) {
-          waitingCommand = true;
-          respond("Oi! Estou ouvindo.");
-          setStatus("Pode falar seu comando.");
-        }
-      }
-    };
-
-    recognition.onerror = event => {
-      if (event.error === "not-allowed" ||
-          event.error === "service-not-allowed") {
-        listening = false;
-        $("orb").classList.remove("listening");
-        setStatus("Permita o acesso ao microfone nas configurações.");
-      } else if (event.error === "audio-capture") {
-        setStatus("Não encontrei um microfone disponível.");
-      } else if (event.error !== "no-speech" &&
-                 event.error !== "aborted") {
-        setStatus("A escuta foi interrompida: " + event.error);
-      }
-    };
-
-    recognition.onend = () => {
-      listening = false;
-      $("orb").classList.remove("listening");
-
-      if (restarting) return;
-
-      // Tenta retomar a escuta enquanto a página continua ativa.
-      if (window.keepHashListening) {
-        setTimeout(() => {
-          if (window.keepHashListening) startListening();
-        }, 700);
-      } else {
-        setStatus("Escuta parada. Toque em iniciar para voltar.");
-      }
-    };
-
-    window.keepHashListening = true;
-    recognition.start();
-  } catch (error) {
-    listening = false;
-    setStatus("Não foi possível iniciar. Tente novamente.");
-  }
-}
-
-function stopListening() {
-  window.keepHashListening = false;
-  listening = false;
-  waitingCommand = false;
-  restarting = true;
-
-  if (recognition) {
-    try { recognition.stop(); } catch (e) {}
-  }
-
-  $("orb").classList.remove("listening");
-  setStatus("Escuta desligada.");
-}
-
-function handleCommand(command) {
-  if (/\b(oi|ola|bom dia|boa tarde|boa noite)\b/.test(command)) {
-    respond("Olá! Que bom falar com você.");
-  } else if (command.includes("seu nome") ||
-             command.includes("quem e voce")) {
-    respond("Meu nome é " +
-      (localStorage.getItem("hashName") || "HASH") +
-      ", seu assistente.");
-  } else if (command.includes("que horas") ||
-             command.includes("horas sao")) {
-    respond("Agora são " + new Date().toLocaleTimeString("pt-BR", {
-      hour: "2-digit", minute: "2-digit"
-    }));
-  } else if (command.includes("data de hoje") ||
-             command.includes("que dia e hoje")) {
-    respond("Hoje é " + new Date().toLocaleDateString("pt-BR", {
-      weekday: "long", day: "numeric", month: "long"
-    }));
-  } else if (command.includes("parar de ouvir") ||
-             command.includes("desligar escuta")) {
-    stopListening();
-    respond("Tudo bem. Desliguei a escuta.");
-  } else {
-    respond("Ainda não sei executar esse comando: " + command +
-      ". Podemos adicionar mais funções depois.");
-  }
-}
-
-$("startBtn").addEventListener("click", startListening);
-$("stopBtn").addEventListener("click", stopListening);
-
-$("speakBtn").addEventListener("click", () => {
-  respond(lastResponse);
-});
-
-$("settingsBtn").addEventListener("click", () => {
-  $("settings").classList.toggle("show");
-});
-
-$("closeSettings").addEventListener("click", () => {
-  $("settings").classList.remove("show");
-});
-
-$("saveBtn").addEventListener("click", () => {
-  localStorage.setItem("hashName",
-    $("assistantName").value.trim() || "HASH");
-  localStorage.setItem("hashAccent", $("accent").value);
-  localStorage.setItem("hashBg", $("background").value);
-  localStorage.setItem("hashPanel", $("panel").value);
-  applySettings();
-  respond("Personalização salva.");
-});
-
-applySettings();
+const $=id=>document.getElementById(id);let landscape=false,connected=false,muted=false;
+function setStatus(msg,ok=false){$('statusText').textContent=msg;$('dot').classList.toggle('ok',ok);connected=ok}
+function say(t){$('voiceStatus').textContent=t;if('speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}}
+$('modeBtn').onclick=async()=>{landscape=!landscape;document.body.classList.toggle('landscape',landscape);$('modeBtn').textContent=landscape?'↕ Modo em pé':'↔ Modo deitado';try{if(screen.orientation?.lock)await screen.orientation.lock(landscape?'landscape':'portrait')}catch(e){}};
+async function send(path){if(!connected){say('Conecte o computador primeiro. O programa auxiliar do Windows precisa estar rodando.');return}try{const base='http://'+$('pcAddress').value.trim().replace(/^https?:\/\//,'').replace(/\/$/,'');const r=await fetch(base+path,{method:'POST',mode:'cors'});if(!r.ok)throw Error();say('Comando enviado ao computador.')}catch(e){setStatus('Não foi possível conectar ao PC');say('Falha na conexão. Confira o endereço e se o programa do Windows está aberto.')}}
+$('connect').onclick=async()=>{let a=$('pcAddress').value.trim();if(!a){say('Digite o endereço IP do computador.');return}if(!/^https?:\/\//i.test(a))a='http://'+a;$('pcAddress').value=a.replace(/^https?:\/\//,'');try{let r=await fetch(a.replace(/\/$/,'')+'/health',{mode:'cors'});if(!r.ok)throw Error();setStatus('PC conectado',true);say('Computador conectado.')}catch(e){setStatus('PC não respondeu');say('Não consegui conectar. O programa auxiliar do Windows ainda precisa ser instalado e configurado.')}};
+$('vol').oninput=()=>{$('pct').textContent=$('vol').value+'%'};$('vol').onchange=()=>send('/volume?level='+$('vol').value);
+$('muteBtn').onclick=()=>send('/mute');$('pcMute').onclick=()=>send('/mute');$('pcVolDown').onclick=()=>send('/volume-down');$('pcVolUp').onclick=()=>send('/volume-up');
+$('prev').onclick=()=>send('/previous');$('play').onclick=()=>send('/play-pause');$('next').onclick=()=>send('/next');
+$('voiceBtn').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){say('O reconhecimento de voz não está disponível neste Android.');return}const rec=new SR();rec.lang='pt-BR';rec.onresult=e=>{const t=e.results[0][0].transcript.toLowerCase();say('Você disse: '+t);if(t.includes('pausa')||t.includes('parar música'))send('/play-pause');else if(t.includes('próxima'))send('/next');else if(t.includes('anterior')||t.includes('volta música'))send('/previous');else if(t.includes('silencia'))send('/mute');else say('Ainda não reconheço esse comando.')};rec.onerror=()=>say('Não consegui ouvir. Confira a permissão do microfone.');rec.start();say('Estou ouvindo. Fale um comando.')};
+$('speak').onclick=()=>say('Olá! Sou o Raxi. Conecte o PC para controlar o volume e a música.');
 </script>
-</body>
-</html>
+</body></html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0b0f">
+  <title>HASH — Assistente</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0b0b0f;
+      color: #f5f5f7;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 22px;
+    }
+    main { width: 100%; max-width: 420px; text-align: center; }
+    .logo { font-size: 64px; font-weight: 900; letter-spacing: 8px; }
+    .sub { color: #9999a8; margin: 8px 0 35px; }
+    #resposta {
+      min-height: 100px;
+      padding: 20px;
+      border: 1px solid #30303c;
+      border-radius: 18px;
+      background: #14141c;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    button, input, select {
+      font-size: 16px;
+      border-radius: 13px;
+      padding: 14px;
+    }
+    button {
+      border: none;
+      background: var(--cor, #e53950);
+      color: white;
+      cursor: pointer;
+    }
+    #ouvir { width: 100%; padding: 20px; font-weight: bold; }
+    .secao { margin-top: 25px; text-align: left; }
+    .secao label { display: block; margin: 12px 0 7px; }
+    input, select {
+      width: 100%;
+      background: #191922;
+      color: white;
+      border: 1px solid #393945;
+    }
+    #config { display: none; }
+    .linha { display: flex; gap: 8px; margin-top: 12px; }
+    .linha button { flex: 1; }
+    .pequeno { background: #272733; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="logo">HASH</div>
+  <div class="sub">Seu assistente pessoal</div>
+
+  <div id="resposta">Olá! Eu sou o HASH. Toque no botão e fale comigo.</div>
+
+  <button id="ouvir" onclick="ouvir()">🎙 FALAR COM HASH</button>
+
+  <div class="linha">
+    <button class="pequeno" onclick="responder()">🔊 Falar resposta</button>
+    <button class="pequeno" onclick="mostrarConfig()">⚙ Personalizar</button>
+  </div>
+
+  <section id="config" class="secao">
+    <h3>Personalizar HASH</h3>
+    <label>Cor dos botões</label>
+    <input id="cor" type="color" value="#e53950" onchange="mudarCor(this.value)">
+    <label>Nome do assistente</label>
+    <input id="nome" value="HASH" maxlength="20">
+    <label>Cor de fundo</label>
+    <input id="fundo" type="color" value="#0b0b0f" onchange="mudarFundo(this.value)">
+    <div class="linha">
+      <button onclick="salvar()">Salvar</button>
+      <button class="pequeno" onclick="mostrarConfig()">Fechar</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  const resposta = document.getElementById('resposta');
+
+  function falar(texto) {
+    if (!('speechSynthesis' in window)) {
+      resposta.textContent = 'A leitura de voz não está disponível neste navegador.';
+      return;
+    }
+    speechSynthesis.cancel();
+    const voz = new SpeechSynthesisUtterance(texto);
+    voz.lang = 'pt-BR';
+    speechSynthesis.speak(voz);
+  }
+
+  function responder() {
+    falar(resposta.textContent);
+  }
+
+  function ouvir() {
+    const Reconhecimento = window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!Reconhecimento) {
+      resposta.textContent = 'O reconhecimento de voz não está disponível aqui. Abra esta página no Chrome atualizado.';
+      return;
+    }
+
+    const reconhecimento = new Reconhecimento();
+    reconhecimento.lang = 'pt-BR';
+    reconhecimento.onstart = () => {
+      resposta.textContent = 'Estou ouvindo... fale agora.';
+    };
+    reconhecimento.onresult = (evento) => {
+      const texto = evento.results[0][0].transcript;
+      resposta.textContent = 'Você disse: ' + texto;
+      const comando = texto.toLowerCase();
+
+      if (comando.includes('olá') || comando.includes('oi')) {
+        resposta.textContent = 'Olá! Como posso ajudar você?';
+      } else if (comando.includes('seu nome')) {
+        resposta.textContent = 'Meu nome é ' + (localStorage.nomeHash || 'HASH') + '.';
+      } else if (comando.includes('horas')) {
+        resposta.textContent = 'Agora são ' +
+          new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) + '.';
+      }
+      falar(resposta.textContent);
+    };
+    reconhecimento.onerror = () => {
+      resposta.textContent = 'Não consegui ouvir. Confira a permissão do microfone e tente novamente.';
+    };
+    reconhecimento.start();
+  }
+
+  function mostrarConfig() {
+    const c = document.getElementById('config');
+    c.style.display = c.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function mudarCor(cor) {
+    document.documentElement.style.setProperty('--cor', cor);
+  }
+
+  function mudarFundo(cor) {
+    document.body.style.background = cor;
+  }
+
+  function salvar() {
+    localStorage.nomeHash = document.getElementById('nome').value || 'HASH';
+    localStorage.corHash = document.getElementById('cor').value;
+    localStorage.fundoHash = document.getElementById('fundo').value;
+    document.querySelector('.logo').textContent = localStorage.nomeHash;
+    mudarCor(localStorage.corHash);
+    mudarFundo(localStorage.fundoHash);
+    resposta.textContent = 'Personalização salva neste navegador!';
+  }
+
+  if (localStorage.nomeHash) {
+    document.querySelector('.logo').textContent = localStorage.nomeHash;
+    document.getElementById('nome').value = localStorage.nomeHash;
+  }
+  if (localStorage.corHash) {
+    document.getElementById('cor').value = localStorage.corHash;
+    mudarCor(localStorage.corHash);
+  }
+  if (localStorage.fundoHash) {
+    document.getElementById('fundo').value = localStorage.fundoHash;
+    mudarFundo(localStorage.fundoHash);
+  }
+</script>
+</body>
+  </html>

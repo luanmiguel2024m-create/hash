@@ -1,33 +1,25 @@
-
 name: Gerar APK HASH
-
 on:
   workflow_dispatch:
   push:
     branches: [main]
-
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Baixar projeto
-        uses: actions/checkout@v5
-
+        uses: actions/checkout@v4
       - name: Preparar Java 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-
       - name: Preparar Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
-
       - name: Criar projeto Android
         run: |
           mkdir hash-app
@@ -39,13 +31,13 @@ jobs:
           cp ../index.html www/index.html
           npx cap add android
           npx cap sync android
-
+          # Declara permissão de microfone no manifesto Android.
+          sed -i 's#<application#<uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <application#' android/app/src/main/AndroidManifest.xml
       - name: Compilar APK
         run: |
           cd hash-app/android
           chmod +x gradlew
           ./gradlew assembleDebug
-
       - name: Disponibilizar APK
         uses: actions/upload-artifact@v4
         with:
